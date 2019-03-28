@@ -4,7 +4,7 @@ A multithreaded finite state machine in Java.
 
 # Usage
 
-Explain how project is used here.
+\[Explain how project is used here.\]
 
 # Known Issues
 
