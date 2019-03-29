@@ -24,22 +24,27 @@ public class Machine /*implements Future*/ {
      * @return The number of finite state machines.
      */
     public static void main(String[] args) {
+        //TODO This if statement may need to be below the scanner stuff.
+        if(args[1] != null) {
+            
+            //TODO args[1] is the starting state, do something with this.
 
-
+        }
 
         Scanner input = new Scanner(System.in);
 
-        System.out.println("How many Finite State Machines to create? > ");
+        System.out.print("How many Finite State Machines to create? > ");
         int numFSM = input.nextInt();
 
-        System.out.println("How many iterations for each machine? > ");
+        System.out.print("How many iterations for each machine? > ");
         int numIters = input.nextInt();
 
-        System.out.println("How many threads? > ");
+        System.out.print("How many threads? > ");
         int numThreads = input.nextInt();
 
-        System.out.println("Please enter input filename > ");
+        System.out.print("Please enter input filename > ");
         String inputFilename = input.next();
+
 
         input.close();
 
