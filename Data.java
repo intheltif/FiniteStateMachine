@@ -1,5 +1,5 @@
 /**
- * Contains the result of the execution and resentation of the finite
+ * Contains the result of the execution and representation of the finite
  * state machine.
  *
  * @author Evert Ball
