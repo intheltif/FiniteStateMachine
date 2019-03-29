@@ -13,25 +13,36 @@ import java.util.concurrent.Future;
  * @version 04/10/2019
  */
 
-public class Machine implements Future {
-
-    public Machine() {
-
-        //TODO finish constructor
-
-    } //end constructor 
+public class Machine /*implements Future*/ {
+    
+    //TODO Decide if constructor is needed or not.
     
     /**
      * Prompts the user for the number of finite state machines.
      *
      * @return The number of finite state machines.
      */
-    public int promptUser() {
+    public static void main(String[] args) {
 
-        System.out.println("Please enter the total number of" +
-                            " finite state machines > ");
 
-    } // end promptUser() method
+
+        Scanner input = new Scanner(System.in);
+
+        System.out.println("How many Finite State Machines to create? > ");
+        int numFSM = input.nextInt();
+
+        System.out.println("How many iterations for each machine? > ");
+        int numIters = input.nextInt();
+
+        System.out.println("How many threads? > ");
+        int numIters = input.nextInt();
+
+        System.out.println("Please enter input filename > ");
+        String inputFilename = input.next();
+
+        input.close();
+
+    } // end main method
 
         
 
