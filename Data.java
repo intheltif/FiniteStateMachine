@@ -14,7 +14,7 @@ public class Data {
 	/** Unique ID**/
 	private int id;
 	
-	/** The result of the execution**/
+	/** The state that we ended in from the last iteration**/
 	private double result;
 
 	/** Representation of the FSM. The column represents the state we are currently on and
@@ -32,9 +32,46 @@ public class Data {
     	this.result = res;
     	this.matrix = mat;
     } // end constructor
-    
-    private void iterate() {
-    	Random chance = new Random();
-    }
 
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return the result
+	 */
+	public double getResult() {
+		return result;
+	}
+
+	/**
+	 * @param result the result to set
+	 */
+	public void setResult(double result) {
+		this.result = result;
+	}
+
+	/**
+	 * @return the matrix
+	 */
+	public double[][] getMatrix() {
+		return matrix;
+	}
+
+	/**
+	 * @param matrix the matrix to set
+	 */
+	public void setMatrix(double[][] matrix) {
+		this.matrix = matrix;
+	}
 } // end Data class
