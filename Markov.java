@@ -33,7 +33,9 @@ public class Markov implements Runnable { //TODO implement Callable?
      */
     public Markov(int startState, int numIterations, Data data) {
 
-        //TODO finish constructor.
+        this.startState = startState;
+        this.numIterations = numIterations;
+        this.data = data;
 
     } // end constructor
 
@@ -41,6 +43,6 @@ public class Markov implements Runnable { //TODO implement Callable?
 	public void run() {
 		// TODO Auto-generated method stub
 		
-	}
+	}// end run
 
 } // end Markov class
