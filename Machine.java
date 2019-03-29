@@ -1,3 +1,4 @@
+import java.util.Scanner;
 import java.util.concurrent.Future;
 
 /**
@@ -35,7 +36,7 @@ public class Machine /*implements Future*/ {
         int numIters = input.nextInt();
 
         System.out.println("How many threads? > ");
-        int numIters = input.nextInt();
+        int numThreads = input.nextInt();
 
         System.out.println("Please enter input filename > ");
         String inputFilename = input.next();

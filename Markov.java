@@ -37,10 +37,10 @@ public class Markov implements Runnable { //TODO implement Callable?
 
     } // end constructor
 
-    public void Run() {
-
-        // TODO Finish method
-
-    } // end Run method
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
 
 } // end Markov class
