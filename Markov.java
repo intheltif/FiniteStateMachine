@@ -1,3 +1,4 @@
+import java.util.Random;
 import java.util.concurrent.Callable;
 import java.lang.Thread;
 
@@ -9,9 +10,8 @@ import java.lang.Thread;
  *
  * @version 04/10/2019
  */
-public class Markov implements Runnable { //TODO implement Callable?
+public class Markov implements Callable {
 
-    //TODO Initialize fields to zero, zero, and null respectively?
     /** The start state for the finite state machine. */
     private int startState;
 
@@ -27,21 +27,35 @@ public class Markov implements Runnable { //TODO implement Callable?
      *
      * @param startState The starting state for the finite state machine.
      * @param numIterations The number of iterations to execute.
-     * @param data The data from the data class TODO finish this param
+     * @param data The data from the data class
      *
      */
     public Markov(int startState, int numIterations, Data data) {
-
         this.startState = startState;
         this.numIterations = numIterations;
         this.data = data;
-
     } // end constructor
 
 	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		
+	public Data call() throws Exception{
+		for(int i = 0; i < numIterations; i++) {
+			iterate();
+		}// end for
+		return data;
 	}// end run
-
+	
+	/**
+	 * iterate- Find
+	 */
+	private void iterate() {
+    	double chance = new Random().nextDouble();
+    	double[][] dataAry = data.getMatrix();
+    	
+    	for(int i = 0; i < dataAry.length; i++) {
+    		if(dataAry[i][startState] <= chance) {
+    			//Make the magic happen
+    		}// end if
+    	}// end for
+    	
+	}// end iterate
 } // end Markov class
