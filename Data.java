@@ -11,7 +11,7 @@ import java.util.Random;
  */
 public class Data {
 	
-	/** Unique ID**/
+	/** Unique ID of a thread **/
 	private int id;
 	
 	/** The result of the execution**/

@@ -44,10 +44,12 @@ public class Machine /*implements Future*/ {
 
         System.out.print("Please enter input filename > ");
         String inputFilename = input.next();
-
-
         input.close();
-
+        
+        for(int i = 0; i < numThreads; i++) {
+            Markov marky = new Markov();
+            marky.call();
+        }
     } // end main method
 
         
