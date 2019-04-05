@@ -46,10 +46,6 @@ public class Machine /*implements Future*/ {
         String inputFilename = input.next();
         input.close();
         
-        for(int i = 0; i < numThreads; i++) {
-            Markov marky = new Markov();
-            marky.call();
-        }
     } // end main method
 
         
