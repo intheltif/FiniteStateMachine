@@ -45,15 +45,17 @@ public class Machine /*implements Future*/ {
         System.out.print("How many threads? > ");
         //int numThreads = input.nextInt();
 
-        System.out.print("Please enter input filename > ");
+        System.out.print("Please enter input filename > \n");
         try {
-            inputFile = new Scanner(new File(input.next()));
+        	String testFileName = "mark.txt";
+            inputFile = new Scanner(new File(testFileName));
             size = inputFile.nextInt();
             FSM = new double[size][size];
             int row = 0;
             int column = 0;
             while (inputFile.hasNextDouble()) {
-            	FSM[(row++)%size][(column++)%size] = inputFile.nextDouble();
+            	FSM[(row)%size][(column++)%size] = inputFile.nextDouble();
+            	if(column%size == 0) {row++;}
             }
             inputFile.close();
         } 
@@ -68,7 +70,7 @@ public class Machine /*implements Future*/ {
 
 		for(int i = 0; i < size; i++) {
 			for(int j = 0; j < size; j++) {
-				System.out.print(FSM[i][j] + " ");
+				System.out.print(FSM[i][j] + "\t");
 				if(j == size - 1) {System.out.println("");}
 			}
 		}
