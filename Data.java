@@ -26,7 +26,7 @@ public class Data {
     /**
      * The constructor.
      *
-     * @param res the result of the execution of the FSM.
+     * @param res the result of the last execution of the FSM.
 	 * @param mat The matrix that represents the FSM
      */
     public Data(double res, double[][]mat) {

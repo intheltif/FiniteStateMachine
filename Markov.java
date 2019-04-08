@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  * @version 04/10/2019
  */
-public class Markov implements Callable {
+public class Markov implements Callable<Data>{
 
     /** The start state for the finite state machine. */
     private int startState;
