@@ -1,6 +1,7 @@
 import java.util.Random;
 import java.util.concurrent.Callable;
 import java.lang.Thread;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * The threaded class. It executes the finite state machine.
@@ -48,7 +49,8 @@ public class Markov implements Callable {
 	 * iterate- Find
 	 */
 	private void iterate() {
-    	double chance = new Random().nextDouble();
+    	ThreadLocalRandom randomNum = new ThreadLocalRandom();
+    	Double chance = randomNum.nextDouble(1.0);
     	double[][] dataAry = data.getMatrix();
     	
     	for(int i = 0; i < dataAry.length; i++) {

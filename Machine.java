@@ -1,3 +1,5 @@
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.Scanner;
 import java.util.concurrent.Future;
 
@@ -25,13 +27,16 @@ public class Machine /*implements Future*/ {
      */
     public static void main(String[] args) {
         //TODO This if statement may need to be below the scanner stuff.
-        if(args[1] != null) {
+        //if(args[1] != null) {
             
             //TODO args[1] is the starting state, do something with this.
 
-        }
+        //}
 
         Scanner input = new Scanner(System.in);
+        boolean fileExists = false;
+        FileReader inputFilename = null;
+        char[][] fsmBuffer = char[][]
 
         System.out.print("How many Finite State Machines to create? > ");
         int numFSM = input.nextInt();
@@ -42,10 +47,16 @@ public class Machine /*implements Future*/ {
         System.out.print("How many threads? > ");
         int numThreads = input.nextInt();
 
-        System.out.print("Please enter input filename > ");
-        String inputFilename = input.next();
+        while(!fileExists) {
+            System.out.print("Please enter input filename > ");
+            try {
+                inputFilename = new FileReader(input.next());
+                fileExists = true;
+            } catch (FileNotFoundException fne) {
+                System.out.println("Invalid file. Please enter a valid filename...");
+            }
+        }
         input.close();
-        
     } // end main method
 
         
