@@ -3,8 +3,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.CharBuffer;
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -24,9 +28,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 
 public class Machine /*implements Future*/ {
-    
-    //TODO Decide if constructor is needed or not.
-    
+        
     /**
      * Prompts the user for the number of finite state machines.
      *
@@ -37,11 +39,11 @@ public class Machine /*implements Future*/ {
     	/** Scanner for reading keyboard input**/
         Scanner input = new Scanner(System.in);
         
-        /** A finite state machine**/
+        /** An array of finite state machines**/
         double[][] stateMachine = null;
 
         System.out.print("How many Finite State Machines to create? > ");
-        int numFSM = input.nextInt();
+        int numStateMachine = input.nextInt();
 
         System.out.print("How many iterations for each machine? > ");
         int numIters = input.nextInt();
@@ -59,28 +61,53 @@ public class Machine /*implements Future*/ {
                 System.out.println("Please give a valid filename");
             }
         }
-        Data[] pool = new Data[numThreads];
-        for(int i = 0; i < numThreads; i++) {
-            pool[i] = new Data(0, stateMachine);
+        
+        Data[] dataPool = new Data[numStateMachine];
+        for(int i = 0; i < numStateMachine; i++) {
+        	dataPool[i] = new Data(stateMachine);
         }
 
-        Markov sorin = new Markov(ThreadLocalRandom.current().nextInt(), numIters, pool[0]);
+        Markov[] markovPool = null;
+        Markov sorin = new Markov(ThreadLocalRandom.current().nextInt(), numIters, dataPool[0]);
         
+        /** Fixed to numThreads, this is the pool of executing threads**/
+        ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
         
-        ExecutorService es = Executors.newCachedThreadPool();
-        Future<Data> returnedData = es.submit(sorin);
-        while(!returnedData.isDone());
+        /** Completion Service for retreiving the processed data**/
+        CompletionService<Data> completionS = new ExecutorCompletionService<Data>(threadPool);
+        ArrayList<Data> returnedData = new ArrayList<Data>();
         
-        try {
-			System.out.println(returnedData.get());
-		} catch (InterruptedException ie) {
-			ie.printStackTrace();
-		} catch (ExecutionException ee) {
-			ee.printStackTrace();
+        /** Submits all of the Callable objects to the complete service and collects them**/
+        for(Callable<Data> s : markovPool) {
+        	completionS.submit(s);
+        }
+		int n = markovPool.length;
+		for (int i = 0; i < n; ++i) {
+			try {
+				returnedData.add(completionS.take().get());
+			} catch (InterruptedException | ExecutionException e) {
+				e.printStackTrace();
+			}
 		}
+        
+		System.out.println("Result: " + returnedData.remove(0).getResult());
+
 
         input.close();
-    } // end main method
+    } // end main
+    
+	/**Modified version of Java 8's example of ExecutorCompletionService**/
+	void solve(ExecutorService threadPool, ArrayList<Callable<Data>> markovPool) throws InterruptedException, ExecutionException {
+		CompletionService<Data> completionS = new ExecutorCompletionService<Data>(threadPool);
+		for (Callable<Data> s : markovPool)
+			completionS.submit(s);
+		int n = markovPool.size();
+		for (int i = 0; i < n; ++i) {
+			Data r = completionS.take().get();
+			if (r != null);
+				//use(r);
+		}// end for
+	}// end solve
     
     /**
      * getStateMachien- Helper method that recieves a filename string, read the file, and converts
@@ -101,6 +128,5 @@ public class Machine /*implements Future*/ {
         }
         inputFile.close();
         return stateMach;
-    }
-
+    }// end getStateMachine
 } // end Machine class

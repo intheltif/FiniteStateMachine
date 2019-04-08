@@ -34,6 +34,7 @@ public class Markov implements Callable<Data>{
         this.startState = startState;
         this.numIterations = numIterations;
         this.data = data;
+        this.data.setResult(this.startState);
     } // end constructor
 
 	@Override
