@@ -23,6 +23,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * 
  * It will print the correct answer AFTER all threads have finished.
  *      TODO I believe this is done by the Future interface's get() method.
+ *      	I believe you are correct -Ty
  *
  * @author Evert Ball
  * @author Tyler Baylson
@@ -59,8 +60,7 @@ public class Machine /*implements Future*/ {
         while(!fileFound) {
             try {
             	stateMachine = getStateMachine(input.next());
-            	fileFound = true;
-            } 
+            }
             catch (FileNotFoundException e) {
                 System.out.println("Please give a valid filename");
             }
@@ -72,9 +72,12 @@ public class Machine /*implements Future*/ {
         	markovPool[i] = new Markov(/*ThreadLocalRandom.current().nextInt(5)*/i%5, numIters, new Data(stateMachine));
         }
 
-        //Markov[] markovPool = null;
-        //Markov sorin = new Markov(ThreadLocalRandom.current().nextInt(), numIters, dataPool[0]);
+        /**======This variable is never initialized!!======**/
+        Markov[] markovPool = null;
         
+        /**======This needs to be in a loop. Don't need a variable, just give it right to CompletionS=======**/
+        Markov sorin = new Markov(ThreadLocalRandom.current().nextInt(), numIters, dataPool[0]);
+
         /** Fixed to numThreads, this is the pool of executing threads**/
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
         
@@ -84,7 +87,7 @@ public class Machine /*implements Future*/ {
         
         /** Submits all of the Callable objects to the complete service and collects them**/
         for(Callable<Data> s : markovPool) {
-        	completionS.submit(s);
+        	completionS.submit(s);// Make Markov objects here?
         }
 		int n = markovPool.length;
 		for (int i = 0; i < n; ++i) {
