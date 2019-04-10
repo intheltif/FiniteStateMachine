@@ -32,9 +32,12 @@ public class Machine /*implements Future*/ {
 
     	/** Scanner for reading keyboard input**/
         Scanner input = new Scanner(System.in);
+
+        //This let's us check later if the starting state was given as a command line argument.
         int startingState = -1;
 
         if(args.length > 0) {
+            //If a command line argument was given, set it as our start state.
             startingState = Integer.parseInt(args[0]);
         }
 
@@ -64,27 +67,33 @@ public class Machine /*implements Future*/ {
                 System.out.println("Please give a filename with a valid state machine");
             }
         }
-        //checking time program takes
+        //checking time program takes. We start counting after we get input.
         long startTime = System.currentTimeMillis();
+        //Holds the results of the FSM as they become available.
         double[] results = new double[stateMachine.length];
 
+        //Creates a pool and a Completetion Service so that we can get results as they finish.
         final ExecutorService pool = Executors.newFixedThreadPool(numThreads);
         final CompletionService<Data> completionService = new ExecutorCompletionService<>(pool);
 
-        boolean stateGiven = true;
-        if(startingState == -1) {
-            stateGiven = false;
-        }
-        Random aRandomNum = new Random();
 
+        //Creates all the threads and submits them to the completion service.
         for(int i = 0; i < numStateMachine; i++) {
-            if(!stateGiven) {
+            if(startingState == -1) {
+                // Creates a random start state when not given as a command line argument.
+                Random aRandomNum = new Random();
                 startingState = aRandomNum.nextInt(stateMachine.length);
             }
             completionService.submit(new Markov(i, stateMachine, startingState, numIters));
         }
+        //Shuts the pool down once all threads have been submitted to the completion service.
         pool.shutdown();
 
+        /*
+         * For all of the threads, gets the data as soon as it is available and adds it to our
+         * result array. Once the result array has the data correctly, we can parse it to get our
+         * precentages.
+         */
         try{
 
             int count = 0;
@@ -100,18 +109,23 @@ public class Machine /*implements Future*/ {
                 count++;
             }
         } catch (ExecutionException ee) {
-            System.out.println();
+            System.out.println("Error getting the result.");
         } catch (InterruptedException ie) {
-            System.out.println();
+            System.out.println("Error getting the result");
         }
 
         System.out.println("\nSteady state results:");
         for(int i = 0; i < results.length; i++) {
-            double eachResult = (results[i]/((double)numStateMachine));
+            double eachResult = (results[i]/((double)numStateMachine)/* *100 */);
+            /**NOTE: Dr. K's output has a percent but we are not returning a precent.
+             * Uncomment the "*100" at the end of the eachResult computation to get a precentage.
+             */
             System.out.println("State " + i + ": " + eachResult + "%");
         }
+        //the ending time of the program execution.
         long endTime = System.currentTimeMillis();
-        System.out.println("Time taken: " + ((endTime - startTime)/1000.0) + " sec.");
+        //Used to show how long the execution of the threads take.
+        System.out.println("\nTime taken: " + ((endTime - startTime)/1000.0) + " sec.");
     } // end main
 
     /**
@@ -144,7 +158,6 @@ public class Machine /*implements Future*/ {
         for(double i : columnSum)
             if(i != 1.0){throw new InputMismatchException();}
 
-        System.out.println();
         inputFile.close();
         return stateMach;
     }// end getStateMachine

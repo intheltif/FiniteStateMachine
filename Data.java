@@ -36,41 +36,47 @@ public class Data {
     } // end constructor
 
 	/**
-	 * @return the id
+	 * Returns the unique id for this thread.
+	 * @return the id of this thread.
 	 */
 	public int getId() {
 		return id;
 	}
 
 	/**
-	 * @param id the id to set
+	 * Allows the unique id to be set for this thread.
+	 * @param id the unique id of this thread.
 	 */
 	public void setId(int id) {
 		this.id = id;
 	}
 
 	/**
-	 * @return the result
+	 * Get's the result of the Finite State Machine.
+	 * @return the result of the Finite State Machine execution.
 	 */
 	public int getResult() {
 		return result;
 	}
 
 	/**
-	 * @param result the result to set
+	 * Allows the result of the execution of the Finite State Machine to be set.
+	 * @param result the result of the FSM.
 	 */
 	public void setResult(int result) {
 		this.result = result;
 	}
 
 	/**
-	 * @return the matrix
+	 * Gets the matrix, which represents our FSM.
+	 * @return the Finite State Machine.
 	 */
 	public double[][] getMatrix() {
 		return matrix;
 	}
 
 	/**
+	 * Allows the FSM to be set (Used when reading in the file).
 	 * @param matrix the matrix to set
 	 */
 	public void setMatrix(double[][] matrix) {
