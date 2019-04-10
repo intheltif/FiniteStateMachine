@@ -55,18 +55,13 @@ public class Machine /*implements Future*/ {
         while(!fileFound) {
             try {
             	stateMachine = getStateMachine(input.next());
-/*
-                for(int i =0; i <stateMachine.length; i++) {
-                    for(int j = 0; j < stateMachine[i].length; j++) {
-                        System.out.println("" + stateMachine[i][j]);
-                    }
-                }
-
- */
             	fileFound = true;
             }
-            catch (FileNotFoundException e) {
+            catch (FileNotFoundException fnfe) {
                 System.out.println("Please give a valid filename");
+            }
+            catch(NoSuchElementException nsee){
+                System.out.println("Please give a filename with a valid state machine");
             }
         }
         //checking time program takes
@@ -126,11 +121,13 @@ public class Machine /*implements Future*/ {
      * @return stateMach  The finite state machine
      * @throws FileNotFoundException- When filename received does not match a file in the current directory
      */
-    private static double[][] getStateMachine(String fileName) throws FileNotFoundException{
+    private static double[][] getStateMachine(String fileName) throws FileNotFoundException,
+            NoSuchElementException{
 
         Scanner inputFile = new Scanner(new File(fileName));
         int size = inputFile.nextInt();
         double[][] stateMach = new double[size][size];
+        double[] columnSum = new double[size];
 
         double currInput;
         for(int i=0; i <size; i++) {
@@ -140,9 +137,14 @@ public class Machine /*implements Future*/ {
                     throw new InputMismatchException();
                 }else {
                     stateMach[j][i] = currInput;
+                    columnSum[j] += currInput;
                 }
             }
         }
+        for(double i : columnSum)
+            if(i != 1.0){throw new InputMismatchException();}
+
+        System.out.println();
         inputFile.close();
         return stateMach;
     }// end getStateMachine

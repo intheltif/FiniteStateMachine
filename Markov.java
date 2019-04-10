@@ -37,7 +37,7 @@ public class Markov implements Callable<Data>{
 	@Override
 	public Data call(){
     	int currentState = data.getResult();
-    	Random rand = new Random();
+    	//Random rand = new Random();
     	double exitProbability;
     	double currentProbability;
     	double[][] stateMach = data.getMatrix();
@@ -46,7 +46,7 @@ public class Markov implements Callable<Data>{
     	//int j = 0; TODO not needed out here
 
     	for(int i=0; i <numIterations; i++) {
-    		exitProbability = rand.nextDouble();
+    		exitProbability = ThreadLocalRandom.current().nextDouble();
     		currentProbability = stateMach[currentState][0];
     		int j = 0;
 
