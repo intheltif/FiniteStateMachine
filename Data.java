@@ -29,8 +29,9 @@ public class Data {
      * @param res the result of the last execution of the FSM.
 	 * @param mat The matrix that represents the FSM
      */
-    public Data(double[][]mat) {
-    	this.result = 0;
+    public Data(int id, double[][]mat, int startState) {
+    	this.id = id;
+    	this.result = startState;
     	this.matrix = mat;
     } // end constructor
 

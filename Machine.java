@@ -4,18 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.CharBuffer;
-import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Scanner;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * This class starts and collects results from all threads. All input and
@@ -42,6 +32,11 @@ public class Machine /*implements Future*/ {
 
     	/** Scanner for reading keyboard input**/
         Scanner input = new Scanner(System.in);
+        int startingState = -1;
+
+        if(args.length > 0) {
+            startingState = Integer.parseInt(args[0]);
+        }
 
         /** An array of finite state machines**/
         double[][] stateMachine = null;
@@ -55,107 +50,98 @@ public class Machine /*implements Future*/ {
         System.out.print("How many threads? > ");
         int numThreads = input.nextInt();
 
-        System.out.print("Please enter input filename > \n");
+        System.out.print("Please enter input filename > ");
         boolean fileFound = false;
         while(!fileFound) {
             try {
             	stateMachine = getStateMachine(input.next());
+/*
+                for(int i =0; i <stateMachine.length; i++) {
+                    for(int j = 0; j < stateMachine[i].length; j++) {
+                        System.out.println("" + stateMachine[i][j]);
+                    }
+                }
+
+ */
+            	fileFound = true;
             }
             catch (FileNotFoundException e) {
                 System.out.println("Please give a valid filename");
             }
-            System.out.println("STILL HERE");
         }
-        
-        Markov[] markovPool = new Markov[numStateMachine];
+        //checking time program takes
+        long startTime = System.currentTimeMillis();
+        double[] results = new double[stateMachine.length];
+
+        final ExecutorService pool = Executors.newFixedThreadPool(numThreads);
+        final CompletionService<Data> completionService = new ExecutorCompletionService<>(pool);
+
+        boolean stateGiven = true;
+        if(startingState == -1) {
+            stateGiven = false;
+        }
+        Random aRandomNum = new Random();
+
         for(int i = 0; i < numStateMachine; i++) {
-        	markovPool[i] = new Markov(/*ThreadLocalRandom.current().nextInt(5)*/i%5, numIters, new Data(stateMachine));
-        }
-
-        /**======This variable is never initialized!!======**/
-        Markov[] markovPool = null;
-        
-        /**======This needs to be in a loop. Don't need a variable, just give it right to CompletionS=======**/
-        Markov sorin = new Markov(ThreadLocalRandom.current().nextInt(), numIters, dataPool[0]);
-
-        /** Fixed to numThreads, this is the pool of executing threads**/
-        ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
-        
-        /** Completion Service for retreiving the processed data**/
-        CompletionService<Data> completionS = new ExecutorCompletionService<Data>(threadPool);
-        ArrayList<Data> returnedData = new ArrayList<Data>();
-        
-        /** Submits all of the Callable objects to the complete service and collects them**/
-        for(Callable<Data> s : markovPool) {
-        	completionS.submit(s);// Make Markov objects here?
-        }
-		int n = markovPool.length;
-		for (int i = 0; i < n; ++i) {
-			try {
-				returnedData.add(completionS.take().get());
-                //System.out.println("Result(" + i + "): " + returnedData.remove(0).getResult());
-			} catch (InterruptedException | ExecutionException e) {
-				e.printStackTrace();
-			}
-
-		}
-		int size = returnedData.size();
-		int[] tally = new int[stateMachine[0].length];
-		for(int i = 0; i < size; i++){
-		    int temp = returnedData.remove(0).getResult();
-		    for(int j = 0; j < stateMachine[0].length; j++){
-		        if(j == temp){
-		            tally[j]++;
-                }
+            if(!stateGiven) {
+                startingState = aRandomNum.nextInt(stateMachine.length);
             }
+            completionService.submit(new Markov(i, stateMachine, startingState, numIters));
+        }
+        pool.shutdown();
+
+        try{
+
+            int count = 0;
+
+            while(count < numStateMachine) {
+                Future<Data> future = completionService.take();
+                Data thisData = future.get();
+                /*This print statement proves that our threads are concurrent and non-sequential.
+                   During the print you see that lower thread ids print after higher thread ids.*/
+                //System.out.println("thread_id: " + thisData.getId());
+                int end = thisData.getResult();
+                results[end] += 1;
+                count++;
+            }
+        } catch (ExecutionException ee) {
+            System.out.println();
+        } catch (InterruptedException ie) {
+            System.out.println();
         }
 
-		//System.out.println("Result: " + returnedData.remove(0).getResult());
-        HashMap<Integer, Integer> count = new HashMap<Integer, Integer>();
-		for(int i = 0; i < stateMachine[0].length; i++) {
-		    count.put(i, 0);
+        System.out.println("\nSteady state results:");
+        for(int i = 0; i < results.length; i++) {
+            double eachResult = (results[i]/((double)numStateMachine));
+            System.out.println("State " + i + ": " + eachResult + "%");
         }
-		for(Data d : returnedData){
-            int temp = d.getResult();
-            //System.out.println("Temp: " + temp);
-            count.put(temp, (count.get(temp)+1));
-        }
-		for(int i = 0; i < tally.length; i++) {
-		    System.out.println("Result of state " + i + ": " + (tally[i]));
-        }
-
-        input.close();
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time taken: " + ((endTime - startTime)/1000.0) + " sec.");
     } // end main
-    
-	/**Modified version of Java 8's example of ExecutorCompletionService**/
-	void solve(ExecutorService threadPool, ArrayList<Callable<Data>> markovPool) throws InterruptedException, ExecutionException {
-		CompletionService<Data> completionS = new ExecutorCompletionService<Data>(threadPool);
-		for (Callable<Data> s : markovPool)
-			completionS.submit(s);
-		int n = markovPool.size();
-		for (int i = 0; i < n; ++i) {
-			Data r = completionS.take().get();
-			if (r != null);
-				//use(r);
-		}// end for
-	}// end solve
-    
+
     /**
-     * getStateMachien- Helper method that recieves a filename string, read the file, and converts
+     * getStateMachine- Helper method that recieves a filename string, read the file, and converts
      * the contents into a state machine if the contents are in the appropriate format.
-     * @param fileName- The file to be opened
-     * @return stateMach- The finite state machine
-     * @throws FileNotFoundException- When filename recieved does not match a file in the current directory
+     * @param fileName The file to be opened
+     * @return stateMach  The finite state machine
+     * @throws FileNotFoundException- When filename received does not match a file in the current directory
      */
     private static double[][] getStateMachine(String fileName) throws FileNotFoundException{
+
         Scanner inputFile = new Scanner(new File(fileName));
         int size = inputFile.nextInt();
         double[][] stateMach = new double[size][size];
-        int row = 0;
-        int column = 0;
-        while (inputFile.hasNextDouble()) {
-        	stateMach[(row)%size][(column++)%size] = inputFile.nextDouble();
-        	if(column%size == 0) {row++;}
+
+        double currInput;
+        for(int i=0; i <size; i++) {
+            for(int j = 0; j<size; j++) {
+                currInput = inputFile.nextDouble();
+                if(currInput > 1){
+                    throw new InputMismatchException();
+                }else {
+                    stateMach[j][i] = currInput;
+                }
+            }
         }
         inputFile.close();
         return stateMach;

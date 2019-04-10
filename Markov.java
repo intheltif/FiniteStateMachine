@@ -13,9 +13,6 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class Markov implements Callable<Data>{
 
-    /** The start state for the finite state machine. */
-    private int startState;
-
     /** The number of iterations the FSM should execute. */
     private int numIterations;
 
@@ -27,37 +24,41 @@ public class Markov implements Callable<Data>{
      * iterations to execute, and the data.
      *
      * @param startState The starting state for the finite state machine.
-     * @param numIterations The number of iterations to execute.
-     * @param data The data from the data class
+     * @param numIters The number of iterations to execute.
+     * @param mat The data from the data class.
+	 * @param id The unique id of each Data class.
      *
      */
-    public Markov(int startState, int numIterations, Data data) {
-        this.startState = startState;
-        this.numIterations = numIterations;
-        this.data = data;
-        this.data.setResult(this.startState);
+    public Markov(int id, double[][] mat, int startState, int numIters) {
+        this.numIterations = numIters;
+        this.data = new Data(id, mat, startState);
     } // end constructor
 
 	@Override
-	public Data call() throws Exception{
-		for(int i = 0; i < numIterations; i++) {
-			iterate();
-		}// end for
-		return data;
+	public Data call(){
+    	int currentState = data.getResult();
+    	Random rand = new Random();
+    	double exitProbability;
+    	double currentProbability;
+    	double[][] stateMach = data.getMatrix();
+
+    	int size = stateMach.length - 1;
+    	//int j = 0; TODO not needed out here
+
+    	for(int i=0; i <numIterations; i++) {
+    		exitProbability = rand.nextDouble();
+    		currentProbability = stateMach[currentState][0];
+    		int j = 0;
+
+    		while(j < size && currentProbability < exitProbability) {
+    			j++;
+    			currentProbability += stateMach[currentState][j];
+			}
+    		currentState = j;
+
+		}
+    	data.setResult(currentState);
+    	return data;
 	}// end run
 	
-	/**
-	 * iterate- Find
-	 */
-	private void iterate() {
-    	int chance = 0;
-    	double[][] dataAry = data.getMatrix();
-    	
-    	for(int i = 0; i < dataAry.length; i++) {
-    		if(dataAry[i][/*startState*/0] <= chance) {
-    			//Make the magic happen
-    		}// end if
-    	}// end for
-    	
-	}// end iterate
 } // end Markov class
