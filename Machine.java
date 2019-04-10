@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.CharBuffer;
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
@@ -57,19 +59,21 @@ public class Machine /*implements Future*/ {
         while(!fileFound) {
             try {
             	stateMachine = getStateMachine(input.next());
+            	fileFound = true;
             } 
             catch (FileNotFoundException e) {
                 System.out.println("Please give a valid filename");
             }
+            System.out.println("STILL HERE");
         }
         
-        Data[] dataPool = new Data[numStateMachine];
+        Markov[] markovPool = new Markov[numStateMachine];
         for(int i = 0; i < numStateMachine; i++) {
-        	dataPool[i] = new Data(stateMachine);
+        	markovPool[i] = new Markov(/*ThreadLocalRandom.current().nextInt(5)*/i%5, numIters, new Data(stateMachine));
         }
 
-        Markov[] markovPool = null;
-        Markov sorin = new Markov(ThreadLocalRandom.current().nextInt(), numIters, dataPool[0]);
+        //Markov[] markovPool = null;
+        //Markov sorin = new Markov(ThreadLocalRandom.current().nextInt(), numIters, dataPool[0]);
         
         /** Fixed to numThreads, this is the pool of executing threads**/
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
@@ -86,13 +90,36 @@ public class Machine /*implements Future*/ {
 		for (int i = 0; i < n; ++i) {
 			try {
 				returnedData.add(completionS.take().get());
+                //System.out.println("Result(" + i + "): " + returnedData.remove(0).getResult());
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
 			}
-		}
-        
-		System.out.println("Result: " + returnedData.remove(0).getResult());
 
+		}
+		int size = returnedData.size();
+		int[] tally = new int[stateMachine[0].length];
+		for(int i = 0; i < size; i++){
+		    int temp = returnedData.remove(0).getResult();
+		    for(int j = 0; j < stateMachine[0].length; j++){
+		        if(j == temp){
+		            tally[j]++;
+                }
+            }
+        }
+
+		//System.out.println("Result: " + returnedData.remove(0).getResult());
+        HashMap<Integer, Integer> count = new HashMap<Integer, Integer>();
+		for(int i = 0; i < stateMachine[0].length; i++) {
+		    count.put(i, 0);
+        }
+		for(Data d : returnedData){
+            int temp = d.getResult();
+            //System.out.println("Temp: " + temp);
+            count.put(temp, (count.get(temp)+1));
+        }
+		for(int i = 0; i < tally.length; i++) {
+		    System.out.println("Result of state " + i + ": " + (tally[i]));
+        }
 
         input.close();
     } // end main

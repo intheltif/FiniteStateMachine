@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Markov implements Callable<Data>{
 
     /** The start state for the finite state machine. */
-    private double startState;
+    private int startState;
 
     /** The number of iterations the FSM should execute. */
     private int numIterations;
@@ -31,7 +31,7 @@ public class Markov implements Callable<Data>{
      * @param data The data from the data class
      *
      */
-    public Markov(double startState, int numIterations, Data data) {
+    public Markov(int startState, int numIterations, Data data) {
         this.startState = startState;
         this.numIterations = numIterations;
         this.data = data;
@@ -50,7 +50,7 @@ public class Markov implements Callable<Data>{
 	 * iterate- Find
 	 */
 	private void iterate() {
-    	Double chance = this.startState;
+    	int chance = 0;
     	double[][] dataAry = data.getMatrix();
     	
     	for(int i = 0; i < dataAry.length; i++) {

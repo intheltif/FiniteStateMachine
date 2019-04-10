@@ -15,7 +15,7 @@ public class Data {
 	private int id;
 	
 	/** The state that we ended in from the last iteration**/
-	private double result;
+	private int result;
 
 	/** Representation of the FSM. The column represents the state we are currently on and
 	 *  the row represents our probability of changing states. So for figure 1: the first
@@ -51,14 +51,14 @@ public class Data {
 	/**
 	 * @return the result
 	 */
-	public double getResult() {
+	public int getResult() {
 		return result;
 	}
 
 	/**
 	 * @param result the result to set
 	 */
-	public void setResult(double result) {
+	public void setResult(int result) {
 		this.result = result;
 	}
 
