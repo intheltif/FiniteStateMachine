@@ -1,3 +1,8 @@
+# Finite State Machine
+Author: Evert Ball
+
+Author: Tyler Baylson
+
 # Description
 
 A multithreaded finite state machine in Java. Will ask the user for (in order) the number of state machines, the number of
